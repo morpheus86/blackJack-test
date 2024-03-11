@@ -16,8 +16,8 @@ To get the project up and running on your local machine, follow these steps:
 1. **Clone the Repository**
 
    ```bash
-   git clone https://github.com/morpheus86/blackJack-test
-   cd blackjack-test
+   git clone https://github.com/your-repository/blackjack-game.git
+   cd blackjack-game
    ```
 
 2. **Install Dependencies**

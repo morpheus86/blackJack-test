@@ -1,5 +1,5 @@
 export interface ICard {
-  image: string;
+  image?: string;
   value: string; // 'ACE', '2', '3', ..., 'KING'
   suit: string;  // 'HEARTS', 'DIAMONDS', 'CLUBS', 'SPADES'
 };
