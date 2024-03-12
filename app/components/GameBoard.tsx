@@ -1,22 +1,22 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
-import Hand from './Hand';
+import React, { useEffect, useState } from "react";
+import Hand from "./Hand";
 
-import { ICard } from '../types';
+import { ICard } from "../types";
 
-import { initializeDeck, drawCards, reshuffleDeck } from '../utils/api';
-import { calculateHandValue } from '../utils/gameLogic';
+import { initializeDeck, drawCards, reshuffleDeck } from "../utils/api";
+import { calculateHandValue } from "../utils/gameLogic";
 
-import styles from './GameBoard.module.css';
+import styles from "./GameBoard.module.css";
 
 const GameBoard: React.FC = () => {
-  const [deckId, setDeckId] = useState<string>('');
+  const [deckId, setDeckId] = useState<string>("");
   const [remaining, setRemaining] = useState<number>(0);
   const [playerHand, setPlayerHand] = useState<ICard[]>([]);
   const [houseHand, setHouseHand] = useState<ICard[]>([]);
   const [gameOver, setGameOver] = useState<boolean>(false);
-  const [message, setMessage] = useState<string>('');
+  const [message, setMessage] = useState<string>("");
 
   useEffect(() => {
     const setupGame = async () => {
@@ -42,16 +42,26 @@ const GameBoard: React.FC = () => {
     }
 
     return await drawCards(deckId, count);
-};
+  };
 
-  const handleHit = async () => {
+  const handleHitPlayer = async () => {
     const newCards = await handleDrawCards(1);
     const newHand = [...playerHand, ...newCards];
     setPlayerHand(newHand);
 
     if (calculateHandValue(newHand) > 21) {
       setGameOver(true);
-      setMessage('Bust! You lose.');
+      setMessage("Bust! You lose.");
+    }
+  };
+  const handleHitDealer = async () => {
+    const newCards = await handleDrawCards(1);
+    const newHand = [...houseHand, ...newCards];
+    setHouseHand(newHand);
+
+    if (calculateHandValue(newHand) > 21) {
+      setGameOver(true);
+      setMessage("Bust! You Win.");
     }
   };
 
@@ -60,28 +70,37 @@ const GameBoard: React.FC = () => {
     const houseValue = calculateHandValue(houseHand);
 
     if (playerValue > houseValue) {
-      setMessage('You win!');
+      setMessage("You win!");
     } else if (playerValue < houseValue) {
-      setMessage('You lose!');
+      setMessage("You lose!");
     } else {
-      setMessage('Tie game!');
+      setMessage("Tie game!");
     }
 
     setGameOver(true);
   };
 
-    return (
-      <div className={styles.gameBoard}>
-        <Hand cards={playerHand} />
-        <div className={styles.gameButtons}>
-          <button onClick={handleHit} disabled={gameOver}>Hit</button>
-          <button onClick={handleStand} disabled={gameOver}>Stand</button>
-        </div>
-        {gameOver && <p className={styles.message}>{message}</p>}
-        <h2>House's Hand</h2>
-        <Hand cards={houseHand} />
+  return (
+    <div className={styles.gameBoard}>
+      <Hand cards={playerHand} />
+      <div className={styles.gameButtons}>
+        <button onClick={handleHitPlayer} disabled={gameOver}>
+          Hit
+        </button>
+        <button onClick={handleStand} disabled={gameOver}>
+          Stand
+        </button>
       </div>
-    );
+      {gameOver && <p className={styles.message}>{message}</p>}
+      <h2>House's Hand</h2>
+      <Hand cards={houseHand} />
+      <div className={styles.gameButtons}>
+        <button onClick={handleHitDealer} disabled={gameOver}>
+          Hit
+        </button>
+      </div>
+    </div>
+  );
 };
 
 export default GameBoard;
